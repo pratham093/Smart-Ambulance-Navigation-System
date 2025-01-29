@@ -16,3 +16,5 @@
    weasel==0.3.4
 5. Install requirements:
    pip install -r requirements.txt
+6. To run the script:
+   fastapi dev main.py
