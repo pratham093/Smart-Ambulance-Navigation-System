@@ -29,7 +29,9 @@
    
 6. To run the script:
     
-   fastapi dev main.py   OR    uvicorn main:app --reload
+   fastapi dev main.py
+   ### OR
+   uvicorn main:app --reload
 
 ### Installing Alembic to manage databse script changes
 A. Installation:
