@@ -2,6 +2,7 @@
 
 ## Steps to perform for Client-Server (FastAPI)
 
+### Basics
 1. Create Virtual environment:
    
    python -m venv .venv
