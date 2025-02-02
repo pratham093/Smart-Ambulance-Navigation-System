@@ -17,4 +17,4 @@
 5. Install requirements:
    pip install -r requirements.txt
 6. To run the script:
-   fastapi dev main.py
+   fastapi dev main.py   OR    uvicorn main:app --reload
