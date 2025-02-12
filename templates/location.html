@@ -1,0 +1,157 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Ambulance</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=google_maps_api_key&callback=initMap" async defer></script>
+</head>
+<body>
+    <h2>Request an Ambulance</h2>
+    <form id="ambulance-form">
+        <label for="hospital_id">Hospital ID:</label>
+        <input type="number" id="hospital_id" name="hospital_id" required><br><br>
+        
+        <button type="submit">Request Ambulance</button>
+    </form>
+
+    <script>
+        function getLocationAndSubmit() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Prepare the data to send to the backend
+                    const hospital_id = document.getElementById("hospital_id").value;
+                    const client_location = `${latitude},${longitude}`;
+                    
+                    // Send data to backend
+                    fetch('/update_patient_location/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            hospital_id: hospital_id,
+                            client_location: client_location
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Ambulance requested successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Trigger the function when the form is submitted
+        document.getElementById("ambulance-form").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent the form from submitting the traditional way
+            getLocationAndSubmit();
+        });
+    </script>
+</body>
+</html> {% endcomment %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital and Ambulance Management</title>
+
+    <!-- Include Leaflet.js (OSM) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        #map {
+            height: 400px; /* Adjust as needed */
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hospitals</h1>
+    <ul>
+        {% for hospital in hospitals %}
+            <li>{{ hospital.name }} - {{ hospital.location }}</li>
+        {% endfor %}
+    </ul>
+
+    <h1>Ambulances</h1>
+    <ul>
+        {% for ambulance in ambulances %}
+            <li>{{ ambulance.name }} - Hospital ID: {{ ambulance.hospital_id }}</li>
+        {% endfor %}
+    </ul>
+
+    <br>
+    <a href="/add_hospital">Add New Hospital</a>
+    <br>
+    <a href="/add_ambulance">Add New Ambulance</a>
+
+    <h2>Update Patient Location</h2>
+    <form action="/update_patient_location/" method="POST">
+        <label for="patient_name">Patient Name:</label>
+        <input type="text" id="patient_name" name="patient_name" required>
+        <br><br>
+
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" readonly required>
+        <br><br>
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" readonly required>
+        <br><br>
+
+        <button type="button" onclick="getLocation()">Get Current Location</button>
+        <br><br>
+
+        <input type="submit" value="Update Location">
+    </form>
+
+    <h2>Map (OpenStreetMap)</h2>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([20, 77], 5); // Default center (India)
+
+        // Load OSM tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Function to get the user's location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+
+                    // Update form inputs
+                    document.getElementById("latitude").value = lat;
+                    document.getElementById("longitude").value = lon;
+
+                    // Move and place marker on map
+                    map.setView([lat, lon], 15);
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup("Your Location")
+                        .openPopup();
+                }, function(error) {
+                    alert("Error fetching location: " + error.message);
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital and Ambulance Management</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>    
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        form, .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input, button, a {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button, a {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover, a:hover {
+            background-color: #0056b3;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .location-buttons button {
+            background-color: #28a745;
+        }
+        .location-buttons button:hover {
+            background-color: #218838;
+        }
+        .links {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        #map { width: 100%; height: 500px; }
+    </style>
+</head>
+<body>
+
+    <h1>Hospitals</h1>
+    <div class="card">
+        <ul>
+            {% for hospital in hospitals %}
+                <li>{{ hospital.name }} - {{ hospital.location }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <h1>Ambulances</h1>
+    <div class="card">
+        <ul>
+            {% for ambulance in ambulances %}
+                <li>{{ ambulance.name }} - Hospital ID: {{ ambulance.hospital_id }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="links">
+        <a href="/add_hospital">➕ Add New Hospital</a>
+        <a href="/add_ambulance">🚑 Add New Ambulance</a>
+    </div>
+
+    <h2>Update Patient Location</h2>
+    <form action="/update_patient_location/" method="POST">
+        <label for="patient_name">Patient Name:</label>
+        <input type="text" id="patient_name" name="patient_name" required>
+        <br><br>
+
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" required>
+        <br><br>
+
+        <label for="hospital_id">Hospital ID:</label>
+        <input type="number" id="hospital_id" name="hospital_id" required>
+        <br><br>
+        
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" readonly required>
+        <br><br>
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" readonly required>
+        <br><br>
+
+        <div class="button-group">
+            <button type="button" onclick="getLocation()">📍 Get Current Location</button>
+        </div>
+        <br>
+
+        <h3>Select a Predefined Location:</h3>
+        <div class="button-group location-buttons">
+            <button type="button" onclick="locationSetting(19.105321, 72.830540)">📍 Location 1</button>
+            <button type="button" onclick="locationSetting(19.110000, 72.835000)">📍 Location 2</button>
+            <button type="button" onclick="locationSetting(19.115000, 72.840000)">📍 Location 3</button>
+            <button type="button" onclick="locationSetting(19.120000, 72.845000)">📍 Location 4</button>
+        </div>        
+        
+        <br><br>
+
+        <input type="submit" value="Update Location">
+        <div id="map"></div>
+    </form>
+    <script src="{{ url_for('static', path='script.js') }}" defer></script>
+</body>
+</html>

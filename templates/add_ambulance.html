@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance and Hospital Management</title>
+</head>
+<body>
+    <h1>Ambulance Management</h1>
+    
+    <!-- Ambulance Submission Form -->
+    <h2>Submit Ambulance</h2>
+    <form action="http://localhost:8000/submit_ambulance" method="post">
+        <label for="name">Ambulance Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+    
+        <label for="hospital_id">Hospital ID:</label><br>
+        <input type="number" id="hospital_id" name="hospital_id" required><br><br>
+    
+        <label for="vehicle_number">Vehicle Number:</label><br>
+        <input type="text" id="vehicle_number" name="vehicle_number" required><br><br>
+    
+        <label for="current_location">Current Location:</label><br>
+        <input type="text" id="current_location" name="current_location" required><br><br>
+    
+        <label for="status">Status:</label><br>
+        <select id="status" name="status" required>
+            <option value="available">available</option>
+            <option value="occupied">occupied</option>
+            <option value="maintenance">maintenance</option>
+        </select><br><br>
+    
+        <input type="submit" value="Submit">
+    </form>
+    
+
+    <!-- Displaying Hospitals -->
+    <h2>Hospitals</h2>
+    <ul id="hospital-list">
+        <!-- Dynamically populated with hospitals -->
+    </ul>
+
+    <!-- Displaying Ambulances -->
+    <h2>Ambulances</h2>
+    <ul id="ambulance-list">
+        <!-- Dynamically populated with ambulances -->
+    </ul>
+
+    <script>
+        // Fetch and display the list of hospitals
+        fetch("http://localhost:8000/hospitals/")
+            .then(response => response.json())
+            .then(data => {
+                const hospitalList = document.getElementById('hospital-list');
+                data.forEach(hospital => {
+                    const li = document.createElement('li');
+                    li.textContent = `ID: ${hospital.id}, Name: ${hospital.name}`;
+                    hospitalList.appendChild(li);
+                });
+            });
+
+        // Fetch and display the list of ambulances
+        fetch("http://localhost:8000/ambulances/")
+            .then(response => response.json())
+            .then(data => {
+                const ambulanceList = document.getElementById('ambulance-list');
+                data.forEach(ambulance => {
+                    const li = document.createElement('li');
+                    li.textContent = `Name: ${ambulance.name}, Vehicle Number: ${ambulance.vehicle_number}, Location: ${ambulance.current_location}`;
+                    ambulanceList.appendChild(li);
+                });
+            });
+    </script>
+</body>
+</html>
