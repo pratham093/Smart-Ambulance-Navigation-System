@@ -1,0 +1,13 @@
+<routes>
+    <!-- Define a vehicle type for the ambulance -->
+    <vType id="ambulance" accel="0.5" decel="4.5" sigma="0.5" length="5" maxSpeed="25"/>
+    
+    <!-- Define a vehicle that starts at the source edge and goes to the destination edge -->
+    <vehicle id="ambulance_1" type="ambulance" depart="0">
+        <!-- The route: first, the source edge, then (if available) the destination edge -->
+        <route edges="-1285481595 73030700"/>
+        
+        <!-- Add a stop at the destination edge to keep the vehicle there -->
+        <stop edge="73030700" pos="10" duration="10000"/>
+    </vehicle>
+</routes>
