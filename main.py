@@ -9,24 +9,82 @@ import logging
 from typing import List
 import traci  
 from fastapi.staticfiles import StaticFiles
-import os
+import os, subprocess, time
+import xml.etree.ElementTree as ET
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 #logger = logging.getLogger(__name__)
-
 app = FastAPI()
+
+# Create FastAPI app with lifespan
+
+#SUMO GUI
+SUMO_BINARY = "sumo-gui" 
+SUMO_CONFIG = "E:/fyp/code/SUMO_V4/osm.sumocfg"
+POI_FILE = "SUMO_V4\locations.poi.xml"
+
+#app = FastAPI(lifespan=lifespan)
 
 # Set up Jinja2 templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-#SUMO GUI
-SUMO_BINARY = "sumo-gui" 
-SUMO_CONFIG_FILE = "E:/fyp/code/SUMO_V4/osm.sumocfg"
+def clear_poi_file():
+    """Clears the POI XML file by resetting it to an empty <pois> tag."""
+    with open(POI_FILE, "w") as file:
+        file.write("<pois></pois>")
+    print("✅ POI file cleared after SUMO closed.")
 
+@app.get("/add_poi_sumo/")
+async def add_poi_sumo(lat: float, lon: float, location_id: str):
+    try:
+        # ✅ Load or create the POI XML file
+        try:
+            tree = ET.parse(POI_FILE)
+            root = tree.getroot()
+        except FileNotFoundError:
+            root = ET.Element("pois")
+            tree = ET.ElementTree(root)
+
+        # ✅ Remove any existing POI with the same ID
+        for existing_poi in root.findall("poi"):
+            if existing_poi.get("id") == location_id:
+                root.remove(existing_poi)
+
+        # ✅ Add a new POI (Blue dot for location)
+        new_poi = ET.Element("poi", {
+            "id": location_id,
+            "lat": str(lat),
+            "lon": str(lon),
+            "type": "destination",
+            "color": "0,0,1",  # Blue color
+            "layer": "1",
+            "width": "10"
+        })
+        root.append(new_poi)
+
+        # ✅ Save changes to the XML file
+        tree.write(POI_FILE)
+
+        # ✅ Start SUMO-GUI
+        process = subprocess.Popen(["sumo-gui", "-c", SUMO_CONFIG])
+
+        # ✅ Wait for SUMO-GUI to close, then clear POI file
+        while process.poll() is None:
+            time.sleep(1)  # Wait a bit before checking again
+
+        clear_poi_file()  # 🔥 Empty the POI file after SUMO is closed manually
+
+        return {"message": f"POI added at {lat}, {lon} and SUMO started."}
+
+    except Exception as e:
+        return {"error": str(e)}
+            
 def start_sumo():
     """Start SUMO if it's not already running."""
     if not traci.isRunning():
-        traci.start([SUMO_BINARY, "-c", SUMO_CONFIG_FILE])
+        traci.start([SUMO_BINARY, "-c", SUMO_CONFIG])
         print("✅ SUMO started.")
 
 def add_poi_to_sumo(id: str, x: float, y: float, color=(0, 0, 255)):
@@ -213,14 +271,6 @@ def update_patient_location(
 
     return {"message": message}
 
-@app.post("/add_poi")
-async def add_poi(id: str, x: float, y: float):
-    try:
-        add_poi_to_sumo(id, x, y, (0, 0, 255))  # Default: Blue
-        return {"message": f"POI {id} added at ({x}, {y})"}
-    except Exception as e:
-        return {"error": str(e)}
-
 @app.post("/update_sumo")
 async def update_sumo(location: schemas.LocationUpdate):
     # Command to update SUMO (Modify based on your setup)
@@ -231,10 +281,15 @@ async def update_sumo(location: schemas.LocationUpdate):
 
     return {"message": f"SUMO updated with location ({location.lat}, {location.lon})"}
 
-# @app.post("/add_poi")
-# async def add_poi(poi: POI):
-#     try:
-#         add_poi_to_sumo(poi.id, poi.x, poi.y, (0, 0, 255))  # Default: Blue
-#         return {"message": f"POI {poi.id} added at ({poi.x}, {poi.y})"}
-#     except Exception as e:
-#         return {"error": str(e)}
+@app.post("/add_poi")
+async def add_poi(id: str, x: float, y: float):
+    try:
+        add_poi_to_sumo(id, x, y, (0, 0, 255))  # Default: Blue
+        return {"message": f"POI {id} added at ({x}, {y})"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# def add_poi_to_sumo(id: str, x: float, y: float, color=(0, 0, 255)):
+#     """Add a POI (Point of Interest) to SUMO."""
+#     traci.poi.add(id, x, y, color, layer=1)
+#     print(f"📍 POI {id} added at ({x}, {y})")

@@ -2,8 +2,6 @@
 var map;
 var firstLocationSet = false;
 
-var locationSetting; // ✅ Declare globally before DOMContentLoaded
-
 document.addEventListener("DOMContentLoaded", function () {
     var mapElement = document.getElementById("map");
 
@@ -12,14 +10,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    var map = L.map('map').setView([19.105321, 72.830540], 14);
+    map = L.map('map').setView([19.105321, 72.830540], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // ✅ Assign function inside DOMContentLoaded
-    locationSetting = function (lat, lon) {  
+    // ✅ Ensure `locationSetting` is globally available
+    window.locationSetting = function (lat, lon, locationId) {  
         let latInput = document.getElementById("latitude");
         let lonInput = document.getElementById("longitude");
 
@@ -29,45 +27,22 @@ document.addEventListener("DOMContentLoaded", function () {
         L.marker([lat, lon]).addTo(map)
             .bindPopup(`POI added at (${lat}, ${lon})`)
             .openPopup();
-    };
 
-    // ✅ Ensure it’s available globally
-    window.locationSetting = locationSetting;
+        console.log(`Location set: ${locationId} at (${lat}, ${lon})`);
+    };
 });
 
+// ✅ Move `addPoiSumo` outside DOMContentLoaded to avoid scope issues
+window.addPoiSumo = function (lat, lon, locationId) {
+    console.log("Adding POI to SUMO:", lat, lon, locationId);
 
-// document.addEventListener("DOMContentLoaded", function () {
-//     // Initialize the map globally
-//     map = L.map('map').setView([19.105321, 72.830540], 14);
-
-//     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//         attribution: '&copy; OpenStreetMap contributors'
-//     }).addTo(map);
-
-//     // ✅ Attach locationSetting to window
-//     window.locationSetting = function (lat, lon) {
-//         let latInput = document.getElementById("latitude");
-//         let lonInput = document.getElementById("longitude");
-
-//         if (latInput) latInput.value = lat;
-//         if (lonInput) lonInput.value = lon;
-
-//         L.marker([lat, lon]).addTo(map)
-//             .bindPopup(`POI added at (${lat}, ${lon})`)
-//             .openPopup();
-
-//         fetch('/add_poi', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ x: lat, y: lon, id: `poi_${lat}_${lon}` })
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             alert(data.message);
-//         })
-//         .catch(error => console.error('Error:', error));
-//     };
-// });
+    fetch(`http://127.0.0.1:8000/add_poi_sumo/?lat=${lat}&lon=${lon}&location_id=${locationId}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log("SUMO Updated:", data);
+    })
+    .catch(error => console.error("Error:", error));
+};
 
 // ✅ Attach getLocation to window
 window.getLocation = function () {
@@ -105,3 +80,36 @@ function addPOI(lat, lon) {
         .bindPopup("Selected Location: " + lat + ", " + lon)
         .openPopup();
 }
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     // Initialize the map globally
+//     map = L.map('map').setView([19.105321, 72.830540], 14);
+
+//     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//         attribution: '&copy; OpenStreetMap contributors'
+//     }).addTo(map);
+
+//     // ✅ Attach locationSetting to window
+//     window.locationSetting = function (lat, lon) {
+//         let latInput = document.getElementById("latitude");
+//         let lonInput = document.getElementById("longitude");
+
+//         if (latInput) latInput.value = lat;
+//         if (lonInput) lonInput.value = lon;
+
+//         L.marker([lat, lon]).addTo(map)
+//             .bindPopup(`POI added at (${lat}, ${lon})`)
+//             .openPopup();
+
+//         fetch('/add_poi', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ x: lat, y: lon, id: `poi_${lat}_${lon}` })
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             alert(data.message);
+//         })
+//         .catch(error => console.error('Error:', error));
+//     };
+// });
