@@ -1,0 +1,23 @@
+🚑 Ambulance ambulance_trip detected.
+🛑 Ambulance stopping on -1285481595 at 8.18 for 100 seconds.
+🔀 A* algorithm has been used.
+🗺️  A* computed route: ['-1285481595', '1124062595#9', '72878025#1', '72878025#3', '73030702#1', '73030702#2', '73030702#3', '1124062593#0', '73030447#0', '73030447#1', '73030447#2', '73030447#3', '73030447#5', '73032857#1', '1124062590#1', '-1180132072#2', '-1180132072#1']
+📍 New route set: ['-1285481595', '1124062595#9', '72878025#1', '72878025#3', '73030702#1', '73030702#2', '73030702#3', '1124062593#0', '73030447#0', '73030447#1', '73030447#2', '73030447#3', '73030447#5', '73032857#1', '1124062590#1', '-1180132072#2', '-1180132072#1']
+🚑 Ambulance resumed at simulation time 105.0.
+🚦 [SIGNAL] Signal cluster_10723296482_866807200_9771116367_9771116368_#1more on edge 72878025#1 set to green.
+🚦 [SIGNAL] Signal joinedS_10279333677_864905398_866807202 on edge 1124062595#9 set to green.
+🎯 Destination edge -1180132072#1 reached at time 180.0
+⏱️  Ambulance travel time (after dispatch): 180.00 seconds
+📄 Metrics CSV saved to: Astar\metrics.csv
+📊 Graphs saved in folder: Astar
+   • 🚀 Speed vs Time
+   • 📏 Distance vs Time
+   • 🚗 Vehicles vs Time
+
+📈 Simulation Summary:
+   ⏱️  Dispatch-to-Destination Time: 180.00 seconds
+   📏 Total Distance Covered: 168.18 meters
+   🚀 Average Speed: 9.34 m/s
+   ⚡ Max Speed: 18.67 m/s
+   🚗 Avg Vehicles in Simulation: 11
+✅ Metrics and plots successfully generated.

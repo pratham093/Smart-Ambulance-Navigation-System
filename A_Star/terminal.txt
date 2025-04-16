@@ -1,0 +1,15 @@
+🎯 Reached destination at t=179.0s
+✅ Reached in 179.00s
+📄 Metrics CSV saved to: A_Star\metrics.csv
+📊 Graphs saved in folder: A_Star
+   • 🚀 Speed vs Time
+   • 📏 Distance vs Time
+   • 🚗 Vehicles vs Time
+
+📈 Simulation Summary:
+   ⏱️  Dispatch-to-Destination Time: 179.00 seconds
+   📏 Total Distance Covered: 168.18 meters
+   🚀 Average Speed: 9.34 m/s
+   ⚡ Max Speed: 18.67 m/s
+   🚗 Avg Vehicles in Simulation: 11
+✅ Metrics and plots successfully generated.

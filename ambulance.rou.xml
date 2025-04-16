@@ -1,0 +1,6 @@
+<routes>
+    <vType id="ambulance" accel="0.5" decel="4.5" sigma="0.5" length="5" maxSpeed="25"
+           color="255,0,0,255" emergency="true"/>
+    <trip id="ambulance_trip" type="ambulance" depart="0" from="-1285481595" to="-181613191#0"/>
+</routes>
+    
