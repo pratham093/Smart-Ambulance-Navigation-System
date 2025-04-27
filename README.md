@@ -90,17 +90,3 @@ Smart-Ambulance-Navigation-System/
 - Dynamic hospital selection based on availability
 - Predictive traffic analysis using machine learning
 
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## Authors
-
-- [Your Name](#)  
-(Replace this with your name or GitHub profile link)
-
----
